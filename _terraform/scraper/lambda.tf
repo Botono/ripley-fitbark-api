@@ -1,9 +1,12 @@
 data "aws_caller_identity" "current" {
-  provider = "aws.us-west-1"
+  provider = "aws"
 }
+
+
+
 data "archive_file" "scraper" {
   type        = "zip"
-  source_file = "${path.root}/../scraper/scraper.py"
+  source_dir = "${path.root}/../scraper_build"
   output_path = "${path.root}/${local.scraper_lambda_filename}"
 }
 
@@ -14,7 +17,7 @@ resource "aws_lambda_function" "scraper" {
   function_name    = "RipleyFitbark_Scraper"
   role             = "${var.lambda_role_arn}"
   runtime          = "python3.6"
-  handler          = "scraper"
+  handler          = "scraper.handler"
   memory_size      = 128
   timeout          = 20
 

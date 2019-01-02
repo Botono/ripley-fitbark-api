@@ -1,0 +1,11 @@
+.vscode
+
+*.tfvars
+.terraform
+*.tfstate*
+*.tfplan
+
+*.zip
+
+scraper_build/
+scraper_tmp/
