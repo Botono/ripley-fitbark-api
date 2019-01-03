@@ -21,6 +21,7 @@ EOF
 
 resource "aws_iam_policy" "lambda_logging_policy" {
   provider = "aws"
+  name = "lambda_logging"
   
   policy = <<EOF
 {
@@ -28,18 +29,11 @@ resource "aws_iam_policy" "lambda_logging_policy" {
    "Statement":[
       {
          "Effect":"Allow",
-         "Action":"logs:CreateLogGroup",
-         "Resource":"arn:aws:logs:us-west-1:${data.aws_caller_identity.current.account_id}:*"
-      },
-      {
-         "Effect":"Allow",
          "Action":[
             "logs:CreateLogStream",
             "logs:PutLogEvents"
          ],
-         "Resource":[
-            "arn:aws:logs:us-west-1:${data.aws_caller_identity.current.account_id}:log-group:[[logGroups]]:*"
-         ]
+         "Resource": "arn:aws:logs:us-west-1:${data.aws_caller_identity.current.account_id}:*"
       }
    ]
 }
@@ -48,24 +42,29 @@ EOF
 
 resource "aws_iam_policy" "lambda_secrets_policy" {
   provider = "aws"
+  name = "lambda_secrets"
 
   policy = <<EOF
 {
     "Version": "2012-10-17",
-    "Statement": {
+    "Statement": [
+      {
         "Effect": "Allow",
         "Action": [
-          "secretsmanager:GetSecretValue",
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource": "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:*:*"
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
           "kms:*"
         ],
-        "Resource": [
-          "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:*:*",
-          "arn:aws:kms:*:${data.aws_caller_identity.current.account_id}:*"
-        ]
-    }
+        "Resource": "*"
+      }
+    ]
 }
 EOF
-  
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logging_attach" {
