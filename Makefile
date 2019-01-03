@@ -1,15 +1,15 @@
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
+API_TOKEN := $(shell lpass show --password 2417292719643593979)
 
-
-terraform-plan: build-scraper
+plan: build-scraper
 	cd _terraform ; \
 	rm terraform.tfplan ; \
 	terraform init -upgrade -input=false ; \
-	terraform plan -input=false -out=terraform.tfplan
+	TF_VAR_fitbark_api_token=$(API_TOKEN) terraform plan -input=false -out=terraform.tfplan
 
-terraform-apply:
+apply:
 	cd _terraform ; \
-	terraform apply -input=false terraform.tfplan
+	TF_VAR_fitbark_api_token=$(API_TOKEN) terraform apply -input=false terraform.tfplan
 	#$(MAKE) -f $(THIS_FILE) cleanup-scraper-build
 
 build-scraper: pull-build-image

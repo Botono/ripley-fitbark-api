@@ -19,12 +19,7 @@ resource "aws_iam_role" "lambda_role" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_logging_attach" {
-  role = "${aws_iam_role.lambda_role.name}"
-  policy_arn = "${aws_iam_policy.lamda_logging_policy.arn}"
-}
-
-resource "aws_iam_policy" "lamda_logging_policy" {
+resource "aws_iam_policy" "lambda_logging_policy" {
   provider = "aws"
   
   policy = <<EOF
@@ -49,4 +44,36 @@ resource "aws_iam_policy" "lamda_logging_policy" {
    ]
 }
 EOF
+}
+
+resource "aws_iam_policy" "lambda_secrets_policy" {
+  provider = "aws"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:GetSecretValue",
+          "kms:*"
+        ],
+        "Resource": [
+          "arn:aws:secretsmanager:*:${data.aws_caller_identity.current.account_id}:*:*",
+          "arn:aws:kms:*:${data.aws_caller_identity.current.account_id}:*"
+        ]
+    }
+}
+EOF
+  
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logging_attach" {
+  role = "${aws_iam_role.lambda_role.name}"
+  policy_arn = "${aws_iam_policy.lambda_logging_policy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_secrets_attach" {
+  role = "${aws_iam_role.lambda_role.name}"
+  policy_arn = "${aws_iam_policy.lambda_secrets_policy.arn}"
 }

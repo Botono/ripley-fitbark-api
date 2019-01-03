@@ -18,6 +18,7 @@ resource "aws_lambda_function" "scraper" {
   role             = "${var.lambda_role_arn}"
   runtime          = "python3.6"
   handler          = "scraper.handler"
+  kms_key_arn      = "${aws_kms_key.secrets_key.arn}"
   memory_size      = 128
   timeout          = 20
 
