@@ -23,7 +23,7 @@ def handler(event, context):
     body['activity_series']['slug'] = ripley_slug
     body['activity_series']['from'] = '2018-12-26'
     body['activity_series']['to'] = '2018-12-31'
-    body['activity_series']['resolution'] = 'DAILY'
+    body['activity_series']['resolution'] = 'HOURLY'
 
     try:
         r = requests.post(url, json=body, headers=headers)
