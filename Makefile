@@ -22,13 +22,13 @@ deploy-scraper-function: build-scraper
 	cd scraper_build/ ; \
 	zip -r ../scraper.zip . ; \
 	cd .. ; \
-	aws lambda update-function-code --profile default --region us-west-1 --function-name RipleyFitbark_Scraper --zip-file fileb://scraper.zip ; \
-	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile default outputfile.txt ; \
+	aws lambda update-function-code --profile ripley_api --region us-west-1 --function-name RipleyFitbark_Scraper --zip-file fileb://scraper.zip ; \
+	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile ripley_api outputfile.txt ; \
 	cat outputfile.txt | jq '.' ; \
 	rm scraper.zip outputfile.txt
 
 invoke-scraper:
-	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile default outputfile.txt ; \
+	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile ripley_api outputfile.txt ; \
 	cat outputfile.txt | jq '.' ; \
 	rm outputfile.txt
 

@@ -29,18 +29,32 @@ resource "aws_lambda_function" "scraper" {
   }
 }
 
+resource "aws_lambda_permission" "allow_cloudwatch" {
+  statement_id_prefix = "AllowExecutionFromCloudWatch"
+  action = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.scraper.function_name}"
+  principal = "events.amazonaws.com"
+  source_arn = "${aws_cloudwatch_event_rule.every_six_hours.arn}"
+
+  depends_on = [
+    "aws_cloudwatch_event_rule.every_six_hours",
+    "aws_lambda_function.scraper"
+  ]
+}
+
+
 resource "aws_cloudwatch_log_group" "scraper" {
   name              = "/aws/lambda/${aws_lambda_function.scraper.function_name}"
   retention_in_days = 14
 }
 
-resource "aws_cloudwatch_event_rule" "every_three_hours" {
-  name = "3-hours"
-  description = "Fires every 3 Hours"
-  schedule_expression = "rate(3 hours)"
+resource "aws_cloudwatch_event_rule" "every_six_hours" {
+  name = "6-hours"
+  description = "Fires every 6 Hours"
+  schedule_expression = "rate(6 hours)"
 }
 
 resource "aws_cloudwatch_event_target" "trigger_scraper_lambda" {
-  rule = "${aws_cloudwatch_event_rule.every_three_hours.name}"
+  rule = "${aws_cloudwatch_event_rule.every_six_hours.name}"
   arn = "${aws_lambda_function.scraper.arn}"
 }
