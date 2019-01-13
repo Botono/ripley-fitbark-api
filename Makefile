@@ -24,8 +24,13 @@ deploy-scraper-function: build-scraper
 	cd .. ; \
 	aws lambda update-function-code --profile default --region us-west-1 --function-name RipleyFitbark_Scraper --zip-file fileb://scraper.zip ; \
 	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile default outputfile.txt ; \
-	cat outputfile.txt ; \
+	cat outputfile.txt | jq '.' ; \
 	rm scraper.zip outputfile.txt
+
+invoke-scraper:
+	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile default outputfile.txt ; \
+	cat outputfile.txt | jq '.' ; \
+	rm outputfile.txt
 
 pull-build-image:
 	docker image pull lambci/lambda:build-python3.6

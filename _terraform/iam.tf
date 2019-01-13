@@ -22,7 +22,7 @@ EOF
 resource "aws_iam_policy" "lambda_logging_policy" {
   provider = "aws"
   name = "lambda_logging"
-  
+
   policy = <<EOF
 {
    "Version":"2012-10-17",
@@ -67,6 +67,35 @@ resource "aws_iam_policy" "lambda_secrets_policy" {
 EOF
 }
 
+resource "aws_iam_policy" "lambda_dynamodb_policy" {
+  provider = "aws"
+  name = "lambda_dynamodb"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem"
+            ],
+            "Resource": [
+              "arn:aws:dynamodb:us-west-1:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_daily.name}",
+              "arn:aws:dynamodb:us-west-1:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_hourly.name}"
+            ]
+        }
+    ]
+}
+EOF
+}
+
+
 resource "aws_iam_role_policy_attachment" "lambda_logging_attach" {
   role = "${aws_iam_role.lambda_role.name}"
   policy_arn = "${aws_iam_policy.lambda_logging_policy.arn}"
@@ -75,4 +104,9 @@ resource "aws_iam_role_policy_attachment" "lambda_logging_attach" {
 resource "aws_iam_role_policy_attachment" "lambda_secrets_attach" {
   role = "${aws_iam_role.lambda_role.name}"
   policy_arn = "${aws_iam_policy.lambda_secrets_policy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
+  role = "${aws_iam_role.lambda_role.name}"
+  policy_arn = "${aws_iam_policy.lambda_dynamodb_policy.arn}"
 }
