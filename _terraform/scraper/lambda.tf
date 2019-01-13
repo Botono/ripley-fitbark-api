@@ -34,13 +34,13 @@ resource "aws_cloudwatch_log_group" "scraper" {
   retention_in_days = 14
 }
 
-resource "aws_cloudwatch_event_rule" "nine_am" {
-  name = "nine-am"
-  description = "fires at 9AM UTC every day"
-  schedule_expression = "cron(0 9 * * ? *)"
+resource "aws_cloudwatch_event_rule" "every_three_hours" {
+  name = "3-hours"
+  description = "Fires every 3 Hours"
+  schedule_expression = "rate(3 hours)"
 }
 
 resource "aws_cloudwatch_event_target" "trigger_scraper_lambda" {
-  rule = "${aws_cloudwatch_event_rule.nine_am.name}"
+  rule = "${aws_cloudwatch_event_rule.every_three_hours.name}"
   arn = "${aws_lambda_function.scraper.arn}"
 }
