@@ -1,7 +1,7 @@
 provider "aws" {
   region = "us-west-1"
-  version = "~> 1.51"
-  profile = "default"
+  version = "~> 1.55"
+  profile = "ripley_api"
 }
 
 provider "archive" {
