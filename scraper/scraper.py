@@ -42,22 +42,6 @@ def handler(event, context):
     body['activity_series']['to'] = queryTo
     body['activity_series']['resolution'] = queryResolution
 
-    # {
-    #     "activity_series": {
-    #         "slug": "8cf60839-4f2c-4167-92a8-98f720c21995",
-    #         "records": [
-    #             {
-    #                 "date": "2019-01-12 10:00:00",
-    #                 "activity_value": 657,
-    #                 "min_play": 2,
-    #                 "min_active": 8,
-    #                 "min_rest": 9,
-    #                 "distance_in_miles": 0.08,
-    #                 "kcalories": 35,
-    #                 "activity_goal": 23100
-    #             },]}}
-
-
     # HOURLY
     try:
         r = requests.post(url, json=body, headers=headers)

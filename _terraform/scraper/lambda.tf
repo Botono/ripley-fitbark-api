@@ -2,12 +2,10 @@ data "aws_caller_identity" "current" {
   provider = "aws"
 }
 
-
-
 data "archive_file" "scraper" {
   type        = "zip"
   source_dir = "${path.root}/../scraper_build"
-  output_path = "${path.root}/${local.scraper_lambda_filename}"
+  output_path = "${path.root}/lambda_builds/${local.scraper_lambda_filename}"
 }
 
 resource "aws_lambda_function" "scraper" {
@@ -18,15 +16,9 @@ resource "aws_lambda_function" "scraper" {
   role             = "${var.lambda_role_arn}"
   runtime          = "python3.6"
   handler          = "scraper.handler"
-  kms_key_arn      = "${aws_kms_key.secrets_key.arn}"
+  kms_key_arn      = "${var.kms_key_arn}"
   memory_size      = 128
-  timeout          = 20
-
-  environment {
-    variables = {
-      FOO       = "BAR"
-    }
-  }
+  timeout          = 30
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {
