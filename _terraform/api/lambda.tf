@@ -10,7 +10,7 @@ data "archive_file" "api" {
 
 resource "aws_lambda_function" "api" {
   description      = "API build with Flask"
-  filename         = "${local.api_lambda_filename}"
+  filename         = "${path.root}/lambda_builds/${local.api_lambda_filename}"
   source_code_hash = "${data.archive_file.api.output_base64sha256}"
   function_name    = "RipleyFitbark_API"
   role             = "${var.lambda_role_arn}"
