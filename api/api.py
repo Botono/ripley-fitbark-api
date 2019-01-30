@@ -1,9 +1,20 @@
-import json
+import awsgi
+import boto3
+from flask import (
+    Flask,
+    jsonify,
+)
 
-def handler(event, context):
-    message = 'THIS WILL BE AN API'
-    print('This API is whack')
-    return {
-        "statusCode": 200,
-        "body": json.dumps(message)
-    }
+app = Flask(__name__)
+
+
+@app.route('/')
+def index():
+    return jsonify(status=200, message='OK')
+
+@app.route('/fitbark')
+def fitbar():
+    return jsonify(status=200, message='fitbark')
+
+def lambda_handler(event, context):
+    return awsgi.response(app, event, context)

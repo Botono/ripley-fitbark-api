@@ -5,8 +5,14 @@ resource "aws_api_gateway_rest_api" "api" {
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = "${aws_api_gateway_rest_api.api.id}"
   stage_name  = "v1"
-  stage_description = "The newest one"
-  depends_on  = ["aws_api_gateway_integration.lambda_get",]
+  stage_description = "1.0.1"
+  depends_on  = [
+    "aws_api_gateway_integration.lambda_get",
+    "aws_api_gateway_integration.lambda_post",
+    "aws_api_gateway_integration.lambda_put",
+    "aws_api_gateway_integration.lambda_delete",
+    "aws_api_gateway_integration.lambda_options",
+  ]
 }
 
 resource "aws_api_gateway_resource" "proxy" {
@@ -38,7 +44,7 @@ resource "aws_api_gateway_method" "proxy_post" {
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "lambda_POST" {
+resource "aws_api_gateway_integration" "lambda_post" {
   rest_api_id             = "${aws_api_gateway_rest_api.api.id}"
   resource_id             = "${aws_api_gateway_method.proxy_post.resource_id}"
   http_method             = "${aws_api_gateway_method.proxy_post.http_method}"

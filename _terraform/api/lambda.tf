@@ -15,7 +15,7 @@ resource "aws_lambda_function" "api" {
   function_name    = "RipleyFitbark_API"
   role             = "${var.lambda_role_arn}"
   runtime          = "python3.6"
-  handler          = "api.handler"
+  handler          = "api.lambda_handler"
   kms_key_arn      = "${var.kms_key_arn}"
   memory_size      = 128
   timeout          = 30
