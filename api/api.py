@@ -13,14 +13,7 @@ app.register_blueprint(fitbark)
 
 @app.route('/')
 def index():
-    return jsonify(status=200, message='The URL for this page is {}'.format(url_for('index')))
-
-
-@app.route('/foo')
-def foo():
-    return jsonify(status=200, message='The URL for this page is {}'.format(url_for('foo')))
-
-
+    return jsonify('Hello'), 200
 
 def lambda_handler(event, context):
     return awsgi.response(app, event, context)
