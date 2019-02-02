@@ -1,4 +1,5 @@
 .vscode
+.python-version
 
 *.tfvars
 .terraform

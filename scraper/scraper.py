@@ -24,11 +24,13 @@ def handler(event, context):
 
     #Set dates
     pst = dateutil.tz.gettz('America/Los_Angeles')
+    d = datetime.now(tz=pst)-timedelta(3)
+    startDate = d.strftime('%Y-%m-%d')
     d = datetime.now(tz=pst)-timedelta(1)
-    yesterday = d.strftime('%Y-%m-%d')
+    endDate = d.strftime('%Y-%m-%d')
 
-    queryFrom = event.get('from', yesterday)
-    queryTo = event.get('to', yesterday)
+    queryFrom = event.get('from', startDate)
+    queryTo = event.get('to', endDate)
     queryResolution = event.get('resolution', 'HOURLY')
 
     print('Query Parameters: FROM: {0} TO: {1} RESOLUTION: {2}'.format(queryFrom, queryTo, queryResolution))
@@ -57,7 +59,7 @@ def handler(event, context):
             table.put_item(
                 Item=record
             )
-        print('HOURLY records added for {0}'.format(queryFrom))
+        print('HOURLY records added for {0} - {1}'.format(queryFrom, queryTo))
     except Exception as e:
         print('ERROR: HOURLY update failed: {0}'.format(str(e)))
         return {
@@ -80,7 +82,7 @@ def handler(event, context):
                 table.put_item(
                     Item=record
                 )
-            print('DAILY records added for {0}'.format(queryFrom))
+            print('DAILY records added for {0} - {1}'.format(queryFrom, queryTo))
         except Exception as e:
             print('ERROR: DAILY update failed: {0}'.format(str(e)))
             return {
