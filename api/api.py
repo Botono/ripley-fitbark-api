@@ -1,4 +1,5 @@
 import awsgi
+import os
 
 from flask import (
     Flask,
@@ -6,6 +7,7 @@ from flask import (
     url_for
 )
 
+from config import config
 from fitbark import fitbark
 from water import water
 
@@ -18,4 +20,5 @@ def index():
     return jsonify('Hello'), 200
 
 def lambda_handler(event, context):
+    config['debug_mode'] = os.environ.get('DEBUG', False)
     return awsgi.response(app, event, context)

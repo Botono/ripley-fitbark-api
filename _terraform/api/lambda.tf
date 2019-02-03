@@ -22,7 +22,7 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      FOO       = "BAR"
+      DEBUG = true
     }
   }
 }

@@ -1,7 +1,7 @@
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 API_TOKEN := $(shell lpass show --password 2417292719643593979)
 RIPLEY_SLUG := $(shell lpass show --notes 7195172272909835495)
-
+GOOGLE_CREDS_NOTE_ID := 1198256837478991513
 
 plan: build-lambdas
 	@cd _terraform ; \
@@ -38,7 +38,7 @@ invoke-scraper:
 build-api:
 	mkdir -p _lambda_builds/api_build ; \
 	cp -a api/. _lambda_builds/api_build/ ; \
-	lpass show --notes 1198256837478991513 > _lambda_builds/api_build/cred.json ; \
+	lpass show --notes $(GOOGLE_CREDS_NOTE_ID) > _lambda_builds/api_build/credentials.json ; \
 	docker run --rm -v $(shell pwd):/var/task -w /var/task/_lambda_builds/api_build lambci/lambda:build-python3.6 pip3 install -r requirements.txt --progress-bar emoji -t ./
 
 deploy-api-function: build-api
@@ -55,4 +55,4 @@ pull-build-image:
 	docker image pull lambci/lambda:build-python3.6
 
 cleanup-secrets:
-	rm _lambda_builds/api_build/cred.json
+	rm _lambda_builds/api_build/credentials.json
