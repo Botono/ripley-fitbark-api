@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {
 
 data "archive_file" "scraper" {
   type        = "zip"
-  source_dir = "${path.root}/../scraper_build"
+  source_dir = "${path.root}/../_lambda_builds/scraper_build"
   output_path = "${path.root}/${local.scraper_lambda_filename}"
 }
 

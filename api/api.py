@@ -7,9 +7,11 @@ from flask import (
 )
 
 from fitbark import fitbark
+from water import water
 
 app = Flask(__name__)
 app.register_blueprint(fitbark)
+app.register_blueprint(water)
 
 @app.route('/')
 def index():

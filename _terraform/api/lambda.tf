@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {
 
 data "archive_file" "api" {
   type        = "zip"
-  source_dir = "${path.root}/../api_build"
+  source_dir = "${path.root}/../_lambda_builds/api_build"
   output_path = "${path.root}/lambda_builds/${local.api_lambda_filename}"
 }
 
