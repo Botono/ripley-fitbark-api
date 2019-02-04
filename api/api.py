@@ -6,18 +6,18 @@ from flask import (
     jsonify,
     url_for
 )
+from flask_cors import CORS
 
 from config import config
 from fitbark import fitbark
 from water import water
 
+
 app = Flask(__name__)
 app.register_blueprint(fitbark)
 app.register_blueprint(water)
 
-@app.route('/')
-def index():
-    return jsonify('Hello'), 200
+CORS(app)
 
 def lambda_handler(event, context):
     config['debug_mode'] = os.environ.get('DEBUG', False)

@@ -16,7 +16,6 @@ water = Blueprint('water', __name__)
 
 SHEET_ID = '1UbzDb1yA0XIStT4A5_5Uf3V4RWEXrM-_2gFpfBjtTb8'
 
-
 @water.route('/water', methods=['GET'])
 def getWater():
 
