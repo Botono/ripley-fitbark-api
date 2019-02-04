@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket  = "ripleyapi-terraform-state"
+    bucket  = "ripley.dog-api-terraform-state"
     key     = "production/terraform.tfstate"
-    region  = "us-west-1"
+    region  = "us-west-2"
     profile = "ripley_api"
   }
 }

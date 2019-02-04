@@ -1,6 +1,6 @@
 provider "aws" {
-  region = "us-west-1"
-  version = "~> 1.55"
+  region = "us-west-2"
+  version = "~> 1.57"
   profile = "ripley_api"
 }
 

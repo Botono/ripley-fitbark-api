@@ -9,6 +9,10 @@ plan: build-lambdas
 	terraform init -upgrade -input=false ; \
 	TF_VAR_fitbark_api_token=$(API_TOKEN) TF_VAR_fitbark_ripley_slug=$(RIPLEY_SLUG) terraform plan -input=false -out=terraform.tfplan
 
+destroy:
+	@cd _terraform ; \
+	TF_VAR_fitbark_api_token=$(API_TOKEN) TF_VAR_fitbark_ripley_slug=$(RIPLEY_SLUG) terraform destroy
+
 apply:
 	@cd _terraform ; \
 	TF_VAR_fitbark_api_token=$(API_TOKEN) TF_VAR_fitbark_ripley_slug=$(RIPLEY_SLUG) terraform apply -input=false terraform.tfplan
