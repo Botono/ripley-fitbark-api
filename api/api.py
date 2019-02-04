@@ -17,7 +17,9 @@ app = Flask(__name__)
 app.register_blueprint(fitbark)
 app.register_blueprint(water)
 
-CORS(app)
+CORS(app, origins=['http://localhost:3000',
+                   '^(https?://(?:.+\.)?ripley\.dog(?::\d{1,5})?)$',
+                   '^(https?://(?:.+\.)?botono\.com(?::\d{1,5})?)$'])
 
 def lambda_handler(event, context):
     config['debug_mode'] = os.environ.get('DEBUG', False)
