@@ -79,7 +79,7 @@ resource "aws_iam_policy" "lambda_logging_policy" {
             "logs:CreateLogStream",
             "logs:PutLogEvents"
          ],
-         "Resource": "arn:aws:logs:us-west-1:${data.aws_caller_identity.current.account_id}:*"
+         "Resource": "arn:aws:logs:us-west-2:${data.aws_caller_identity.current.account_id}:*"
       }
    ]
 }
@@ -132,8 +132,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
                 "dynamodb:UpdateItem"
             ],
             "Resource": [
-              "arn:aws:dynamodb:us-west-1:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_daily.name}",
-              "arn:aws:dynamodb:us-west-1:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_hourly.name}"
+              "arn:aws:dynamodb:us-west-2:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_daily.name}",
+              "arn:aws:dynamodb:us-west-2:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_hourly.name}"
             ]
         }
     ]

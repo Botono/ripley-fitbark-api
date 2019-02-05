@@ -29,13 +29,13 @@ deploy-scraper-function: build-scraper
 	cd _lambda_builds/scraper_build/ ; \
 	zip -r ../scraper.zip . ; \
 	cd .. ; \
-	aws lambda update-function-code --profile ripley_api --region us-west-1 --function-name RipleyFitbark_Scraper --zip-file fileb://scraper.zip ; \
-	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile ripley_api outputfile.txt ; \
+	aws lambda update-function-code --profile ripley_api --region us-west-2 --function-name RipleyFitbark_Scraper --zip-file fileb://scraper.zip ; \
+	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-2 --profile ripley_api outputfile.txt ; \
 	cat outputfile.txt | jq '.' ; \
 	rm scraper.zip outputfile.txt
 
 invoke-scraper:
-	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile ripley_api outputfile.txt ; \
+	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-2 --profile ripley_api outputfile.txt ; \
 	cat outputfile.txt | jq '.' ; \
 	rm outputfile.txt
 
@@ -49,8 +49,8 @@ deploy-api-function: build-api
 	cd _lambda_builds/api_build/ ; \
 	zip -r ../api.zip . ; \
 	cd .. ; \
-	aws lambda update-function-code --profile ripley_api --region us-west-1 --function-name RipleyFitbark_API --zip-file fileb://api.zip ; \
-	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-1 --profile ripley_api outputfile.txt ; \
+	aws lambda update-function-code --profile ripley_api --region us-west-2 --function-name RipleyFitbark_API --zip-file fileb://api.zip ; \
+	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-2 --profile ripley_api outputfile.txt ; \
 	cat outputfile.txt | jq '.' ; \
 	rm api.zip outputfile.txt
 	$(MAKE) -f $(THIS_FILE) cleanup-secrets

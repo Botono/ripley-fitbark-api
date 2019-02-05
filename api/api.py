@@ -9,6 +9,7 @@ from flask import (
 from flask_cors import CORS
 
 from config import config
+from changelog import changelog
 from fitbark import fitbark
 from water import water
 
@@ -16,6 +17,7 @@ from water import water
 app = Flask(__name__)
 app.register_blueprint(fitbark)
 app.register_blueprint(water)
+app.register_blueprint(changelog)
 
 CORS(app, origins=['http://localhost:3000',
                    '^(https?://(?:.+\.)?ripley\.dog(?::\d{1,5})?)$',
