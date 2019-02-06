@@ -43,13 +43,11 @@ def getChangelog():
         formattedResults = {}
         for row in values:
             date = parser.parse(row[0])
-            formattedResults[date.strftime("%Y/%m/%d")] = {
-                'change_type': row[1],
-                'description': row[2],
-            }
+            row[0] = date.strftime("%Y/%m/%d")
+
 
     except Exception as e:
         print('[ERROR] {0}'.format(str(e)))
         return jsonify('A problem occurred. See the error log for details.'), 500
 
-    return jsonify(formattedResults), 200
+    return jsonify(values), 200
