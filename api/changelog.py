@@ -6,6 +6,7 @@ from flask import (
     request,
     url_for,
 )
+from operator import itemgetter
 
 from config import config
 import utils
@@ -43,13 +44,13 @@ def getChangelog():
     except Exception as e:
         return jsonify('DB scan failed: {0}'.format(str(e))), 500
 
-    processedResults = {}
+    processedResults = []
     currentDate = ''
 
     for result in rawResults:
-         processedResults[result['date']] = {
-             'type': result.get('type'),
-             'message': result.get('message'),
-         }
+        processedResults.append(result)
+
+    # Reverse sort results
+    processedResults = sorted(processedResults, key=itemgetter('date'), reverse=True)
 
     return jsonify(processedResults), 200
