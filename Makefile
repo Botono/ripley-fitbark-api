@@ -20,6 +20,8 @@ apply:
 
 build-lambdas: pull-build-image build-scraper build-api build-sheets-writer
 
+deploy-functions: deploy-sheets-writer-function deploy-api-function deploy-scraper-function
+
 build-sheets-writer:
 	mkdir -p _lambda_builds/sheets_data_writer_build ; \
 	cp -a sheets_data_writer/. _lambda_builds/sheets_data_writer_build/

@@ -1,5 +1,4 @@
-import dateutil.parser as parser
-from googleapiclient.discovery import build
+import boto3
 from flask import (
     Flask,
     Blueprint,
@@ -8,7 +7,6 @@ from flask import (
     url_for,
 )
 
-import google_auth
 from config import config
 import utils
 
@@ -21,34 +19,37 @@ SHEET_ID = '1ZLBAN7ZObEoB8hdPoITFkXPzPyO4ycTr2T-om2K6TG4'
 @changelog.route('/changelog', methods=['GET'])
 def getChangelog():
 
+    rawResults = []
+
+    tableName = 'Ripley_Changelog'
+
     try:
-        google_auth.load_credentials('sheets')
-        range_name = 'Form Responses 1!A2:C'
-        service = build(
-            'sheets', 'v4', credentials=config['googleAPICreds'], cache_discovery=False)
-        sheet = service.spreadsheets()
-        result = sheet.values().get(spreadsheetId=SHEET_ID,
-                                    range=range_name).execute()
-        values = result.get('values', [])
-        # Remove empty values
-        values[:] = [x for x in values if x != []]
+        if config['db'] is None:
+            config['db'] = boto3.resource(
+                'dynamodb', region_name=config['region'])
 
-        if not values:
-            utils.debug_log('/changelog GET: No results')
-        else:
-            utils.debug_log(
-                '/changelog GET: {0} records found!'.format(len(values)))
+        table = config['db'].Table(tableName)
 
+        response = table.scan(
+            # FilterExpression=Key('date').between(startDate, endDate)
+        )
+        rawResults.extend(response['Items'])
 
-        # Format data
-        formattedResults = {}
-        for row in values:
-            date = parser.parse(row[0])
-            row[0] = date.strftime("%Y/%m/%d")
-
+        while response.get('LastEvaluatedKey'):
+            response = table.scan(
+                ExclusiveStartKey=response['LastEvaluatedKey'])
+            rawResults.extend(response['Items'])
 
     except Exception as e:
-        print('[ERROR] {0}'.format(str(e)))
-        return jsonify('A problem occurred. See the error log for details.'), 500
+        return jsonify('DB scan failed: {0}'.format(str(e))), 500
 
-    return jsonify(values), 200
+    processedResults = {}
+    currentDate = ''
+
+    for result in rawResults:
+         processedResults[result['date']] = {
+             'type': result.get('type'),
+             'message': result.get('message'),
+         }
+
+    return jsonify(processedResults), 200

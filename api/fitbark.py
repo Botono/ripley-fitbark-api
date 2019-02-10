@@ -29,8 +29,11 @@ def getActivity():
     tableName = 'RipleyFitbark_Activity_{0}'.format(resolution.capitalize())
 
     try:
-        db = boto3.resource('dynamodb', region_name=config['region'])
-        table = db.Table(tableName)
+        if config['db'] is None:
+            config['db'] = boto3.resource(
+                'dynamodb', region_name=config['region'])
+
+        table = config['db'].Table(tableName)
 
         response = table.scan(
             FilterExpression=Key('date').between(startDate, endDate)

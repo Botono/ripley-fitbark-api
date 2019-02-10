@@ -28,6 +28,7 @@ def handleWater(payload):
     try:
         db = boto3.resource('dynamodb')
         table = db.Table('Ripley_Water')
+        payload['water'] = int(payload['water'])
 
         table.put_item(
             Item=payload
