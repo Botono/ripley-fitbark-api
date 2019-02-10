@@ -18,7 +18,7 @@ resource "aws_lambda_function" "scraper" {
   handler          = "scraper.handler"
   kms_key_arn      = "${var.kms_key_arn}"
   memory_size      = 128
-  timeout          = 30
+  timeout          = 300
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {

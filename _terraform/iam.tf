@@ -79,7 +79,7 @@ resource "aws_iam_policy" "lambda_logging_policy" {
             "logs:CreateLogStream",
             "logs:PutLogEvents"
          ],
-         "Resource": "arn:aws:logs:us-west-2:${data.aws_caller_identity.current.account_id}:*"
+         "Resource": "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"
       }
    ]
 }
@@ -124,22 +124,73 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
         {
             "Effect": "Allow",
             "Action": [
+                "dynamodb:BatchGetItem",
                 "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
                 "dynamodb:GetItem",
                 "dynamodb:PutItem",
-                "dynamodb:Scan",
                 "dynamodb:Query",
+                "dynamodb:Scan",
                 "dynamodb:UpdateItem"
             ],
             "Resource": [
-              "arn:aws:dynamodb:us-west-2:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_daily.name}",
-              "arn:aws:dynamodb:us-west-2:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_hourly.name}"
+              "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_daily.name}",
+              "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.fitbark_hourly.name}",
+              "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.ripley_water.name}",
+              "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.ripley_changelog.name}"
             ]
         }
     ]
 }
 EOF
 }
+
+resource "aws_iam_policy" "sqs_send_message" {
+  provider = "aws"
+  name = "sqs_send_message_only"
+
+  depends_on = [
+    "aws_sqs_queue.google_sheets"
+  ]
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "sqs:SendMessage",
+            "Resource": "${aws_sqs_queue.google_sheets.arn}"
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_policy" "lambda_sqs" {
+  provider = "aws"
+  name = "lambda_do_sqs_stuff"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:ChangeMessageVisibility",
+        "sqs:GetQueueAttributes"
+      ],
+      "Resource": "${aws_sqs_queue.google_sheets.arn}"
+    }
+
+  ]
+}
+EOF
+}
+
 
 
 resource "aws_iam_role_policy_attachment" "lambda_logging_attach" {
@@ -155,4 +206,9 @@ resource "aws_iam_role_policy_attachment" "lambda_secrets_attach" {
 resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
   role = "${aws_iam_role.lambda_role.name}"
   policy_arn = "${aws_iam_policy.lambda_dynamodb_policy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
+  role = "${aws_iam_role.lambda_role.name}"
+  policy_arn = "${aws_iam_policy.lambda_sqs.arn}"
 }

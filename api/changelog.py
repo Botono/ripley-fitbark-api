@@ -23,7 +23,7 @@ def getChangelog():
 
     try:
         google_auth.load_credentials('sheets')
-        range_name = 'Form Responses 1!B2:D'
+        range_name = 'Form Responses 1!A2:C'
         service = build(
             'sheets', 'v4', credentials=config['googleAPICreds'], cache_discovery=False)
         sheet = service.spreadsheets()
@@ -38,6 +38,7 @@ def getChangelog():
         else:
             utils.debug_log(
                 '/changelog GET: {0} records found!'.format(len(values)))
+
 
         # Format data
         formattedResults = {}

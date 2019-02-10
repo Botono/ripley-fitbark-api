@@ -7,8 +7,6 @@
 *.tfplan
 
 *.zip
-cred.json
+credentials.json
 
-scraper_build/
-scraper_tmp/
-api_build/
+*_build/

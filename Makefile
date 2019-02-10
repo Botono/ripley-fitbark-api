@@ -18,7 +18,19 @@ apply:
 	TF_VAR_fitbark_api_token=$(API_TOKEN) TF_VAR_fitbark_ripley_slug=$(RIPLEY_SLUG) terraform apply -input=false terraform.tfplan
 	$(MAKE) -f $(THIS_FILE) cleanup-secrets
 
-build-lambdas: pull-build-image build-scraper build-api
+build-lambdas: pull-build-image build-scraper build-api build-sheets-writer
+
+build-sheets-writer:
+	mkdir -p _lambda_builds/sheets_data_writer_build ; \
+	cp -a sheets_data_writer/. _lambda_builds/sheets_data_writer_build/
+	docker run --rm -v $(shell pwd):/var/task -w /var/task/_lambda_builds/sheets_data_writer_build lambci/lambda:build-python3.6 pip3 install -r requirements.txt -t ./
+
+deploy-sheets-writer-function: build-sheets-writer
+	cd _lambda_builds/sheets_data_writer_build/ ; \
+	zip -r ../sheets_data_writer.zip . ; \
+	cd .. ; \
+	aws lambda update-function-code --profile ripley_api --region us-west-2 --function-name RipleyAPI_SheetsDataWriter --zip-file fileb://sheets_data_writer.zip ; \
+	rm sheets_data_writer.zip
 
 build-scraper:
 	mkdir -p _lambda_builds/scraper_build ; \
