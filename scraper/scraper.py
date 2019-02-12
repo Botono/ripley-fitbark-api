@@ -44,35 +44,38 @@ def handler(event, context):
     body['activity_series']['to'] = queryTo
     body['activity_series']['resolution'] = queryResolution
 
+
     # HOURLY
-    try:
-        r = requests.post(url, json=body, headers=headers)
-
-        records = r.json(parse_float=Decimal)
-
-        records = format_records(records['activity_series']['records'])
-
-        db = boto3.resource('dynamodb')
-        table = db.Table('RipleyFitbark_Activity_Hourly')
-
-        for record in records:
-            table.put_item(
-                Item=record
-            )
-        print('HOURLY records added for {0} - {1}'.format(queryFrom, queryTo))
-    except Exception as e:
-        print('ERROR: HOURLY update failed: {0}'.format(str(e)))
-        return {
-            'error': 'HOURLY update failed: {0}'.format(str(e)),
-            'body': body
-        }
-
-    #DAILY - only run if event is not set
-    if not event.get('resolution', False):
-        body['activity_series']['resolution'] = 'DAILY'
+    if queryResolution == 'HOURLY':
         try:
             r = requests.post(url, json=body, headers=headers)
 
+            records = r.json(parse_float=Decimal)
+
+            records = format_records(records['activity_series']['records'])
+
+            db = boto3.resource('dynamodb')
+            table = db.Table('RipleyFitbark_Activity_Hourly')
+
+            for record in records:
+                table.put_item(
+                    Item=record
+                )
+            print('HOURLY records added for {0} - {1}'.format(queryFrom, queryTo))
+        except Exception as e:
+            print('ERROR: HOURLY update failed: {0}'.format(str(e)))
+            return {
+                'error': 'HOURLY update failed: {0}'.format(str(e)),
+                'body': body
+            }
+
+    #DAILY - only run if event is not set
+    if queryResolution == 'DAILY' or not event.get('resolution', False):
+        body['activity_series']['resolution'] = 'DAILY'
+        try:
+            r = requests.post(url, json=body, headers=headers)
+            if r.status_code == 400:
+                print(r.text)
             records = r.json(parse_float=Decimal)['activity_series']['records']
 
             db = boto3.resource('dynamodb')

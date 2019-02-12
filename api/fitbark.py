@@ -1,7 +1,7 @@
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
-import validator
-from config import config
+import dateutil.tz
+from datetime import datetime, timedelta, timezone
 from flask import (
     Flask,
     Blueprint,
@@ -9,6 +9,9 @@ from flask import (
     request,
     url_for,
 )
+
+import validator
+from config import config
 
 
 fitbark = Blueprint('fitbarkApi', __name__)
@@ -19,10 +22,19 @@ def getActivity():
     valid_resolutions = ['hourly', 'daily']
     startDate = request.args.get('startDate')
     endDate = request.args.get('endDate')
+    numberOfDays = request.args.get('numberOfDays')
     resolution = request.args.get('resolution')
 
     if resolution not in valid_resolutions:
         return jsonify('resolution must be "hourly" or "daily"'), 400
+
+    if numberOfDays:
+        #Set dates
+        pst = dateutil.tz.gettz('America/Los_Angeles')
+        today = datetime.now(tz=pst)
+        numberOfDaysHence = today-timedelta(int(numberOfDays))
+        endDate = today.strftime('%Y-%m-%d')
+        startDate = numberOfDaysHence.strftime('%Y-%m-%d')
 
     rawResults = []
 
