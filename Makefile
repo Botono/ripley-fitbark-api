@@ -74,3 +74,8 @@ pull-build-image:
 
 cleanup-secrets:
 	rm _lambda_builds/api_build/credentials.json
+
+import-bloodwork:
+	lpass show --notes $(GOOGLE_CREDS_NOTE_ID) > utils/credentials.json ; \
+	cd utils ; \
+	python3 google_import.py bloodwork

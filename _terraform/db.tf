@@ -77,3 +77,20 @@ resource "aws_dynamodb_table" "ripley_changelog" {
   }
 
 }
+
+resource "aws_dynamodb_table" "ripley_bloodwork" {
+  name           = "Ripley_Bloodwork"
+  read_capacity  = 10
+  write_capacity = 5
+  hash_key       = "date"
+
+  attribute {
+    name = "date"
+    type = "S"
+  }
+
+  point_in_time_recovery {
+      enabled = true
+  }
+
+}
