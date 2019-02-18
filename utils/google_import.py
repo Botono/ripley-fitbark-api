@@ -36,56 +36,50 @@ def get_bloodwork(sheet):
         # db = boto_sess.resource('dynamodb')
         sheet_id = '1Qv5D3MrANWLmWkOv5fVuvLEmBhUtAR727bymYpLjBjM'
 
-
-        # Get list of sheets
-        spreadSheetData = sheet.get(spreadsheetId=sheet_id).execute()
-        sheets = spreadSheetData['sheets']
-
         db_items = {}
 
-        # {
-        #     'date': '2019-01-01',
-        #     'RBC': 14,
-        #     'WBC': 18,
-        # }
+        headers_range = 'All In One!A1:T1'
+        range_name = 'All In One!A2:T'
 
-        for sheet in sheets:
-            range_name = '{0}!A1:B'.format(sheet['properties']['title'])
-            result = sheet.values().get(spreadsheetId=sheet_id,
-                                        range=range_name).execute()
+        col_headers = sheet.values().get(spreadsheetId=sheet_id,
+                                         range=headers_range).execute().get('values', [])[0]
+        print(col_headers)
+        result = sheet.values().get(spreadsheetId=sheet_id,
+                                    range=range_name).execute()
 
+        values = result.get('values', [])
+        # Remove empty values
+        values[:] = [x for x in values if x != []]
+        table = db.Table('Ripley_Bloodwork')
+        for row in values:
+            date = parser.parse(row[0])
+            item = {
+                'date': date.strftime("%Y-%m-%d"),
+            }
+            idx = 0
+            for header in col_headers:
+                if idx == 0:
+                    idx = idx + 1
+                    continue
+                if '.' in row[idx]:
+                    val = Decimal(row[idx])
+                elif row[idx] == '':
+                    idx = idx + 1
+                    continue
+                else:
+                    val = int(row[idx])
+                item[header] = val
+                idx = idx + 1
 
-            values = result.get('values', [])
-            # Remove empty values
-            values[:] = [x for x in values if x != []]
-            for row in values:
-                date = parser.parse(row[0])
+            table.put_item(
+                Item=item
+            )
 
+            print('Saved blood panel from {0}'.format(
+                date.strftime("%Y-%m-%d")))
 
-        # table = db.Table('Ripley_Water')
-
-        # for row in values:
-        #     date = parser.parse(row[0])
-        #     print('Writing water with date {0}'.format(
-        #         date.strftime("%Y-%m-%d")))
-
-        #     item = {
-        #         'date': date.strftime("%Y-%m-%d"),
-        #         'water': int(row[1]),
-        #         'kibble_eaten': bool(safe_list_get(row, 2, False)),
-        #     }
-
-        #     note = safe_list_get(row, 3, '')
-
-        #     if note:
-        #         item['note'] = note
-
-        #     table.put_item(
-        #         Item=item
-        #     )
-        # print('Water data loaded')
     except Exception as e:
-        print('[ERROR] Failure getting Water data: {0}'.format(str(e)))
+        print('[ERROR] Failure getting Bloodwork data: {0}'.format(str(e)))
 
 def get_water(sheet):
     # Water

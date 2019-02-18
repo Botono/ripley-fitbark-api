@@ -78,4 +78,17 @@ cleanup-secrets:
 import-bloodwork:
 	lpass show --notes $(GOOGLE_CREDS_NOTE_ID) > utils/credentials.json ; \
 	cd utils ; \
-	python3 google_import.py bloodwork
+	python3 google_import.py bloodwork ; \
+	rm credentials.json
+
+import-water:
+	lpass show --notes $(GOOGLE_CREDS_NOTE_ID) > utils/credentials.json ; \
+	cd utils ; \
+	python3 google_import.py water ; \
+	rm credentials.json
+
+import-changelog:
+	lpass show --notes $(GOOGLE_CREDS_NOTE_ID) > utils/credentials.json ; \
+	cd utils ; \
+	python3 google_import.py changelog ; \
+	rm credentials.json
