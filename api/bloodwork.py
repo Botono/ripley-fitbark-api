@@ -48,7 +48,7 @@ def getBloodwork():
 
 @bloodwork.route('/bloodwork/labels', methods=['GET'])
 def getBloodworkLabels():
-    lables = [
+    labels = [
         {
             'name': 'WBC',
             'lower': 4,
@@ -146,4 +146,4 @@ def getBloodworkLabels():
         },
     ]
 
-    return jsonify(lables), 200
+    return jsonify(labels), 200
