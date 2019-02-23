@@ -25,10 +25,6 @@ def getChangelog():
     tableName = 'Ripley_Changelog'
 
     try:
-        if config['db'] is None:
-            config['db'] = boto3.resource(
-                'dynamodb', region_name=config['region'])
-
         table = config['db'].Table(tableName)
 
         response = table.scan(

@@ -1,5 +1,6 @@
 import awsgi
 import os
+import boto3
 
 from flask import (
     Flask,
@@ -27,4 +28,7 @@ CORS(app, origins=['http://localhost:3000',
 
 def lambda_handler(event, context):
     config['debug_mode'] = os.environ.get('DEBUG', False)
+    if config['db'] is None:
+        config['db'] = boto3.resource(
+            'dynamodb', region_name=config['region'])
     return awsgi.response(app, event, context)

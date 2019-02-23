@@ -6,6 +6,7 @@ from flask import (
     request,
     url_for,
 )
+import dateutil.parser as parser
 
 import utils
 from config import config
@@ -23,9 +24,6 @@ def getWater():
     tableName = 'Ripley_Water'
 
     try:
-        if config['db'] is None:
-            config['db'] = boto3.resource('dynamodb', region_name=config['region'])
-
         table = config['db'].Table(tableName)
 
         response = table.scan(
@@ -52,3 +50,40 @@ def getWater():
          }
 
     return jsonify(processedResults), 200
+
+
+@water.route('/water', methods=['POST', 'PUT'])
+def updateWater():
+    body = request.get_json()
+
+    # validate
+    validationErr = ''
+    if not body['water']:
+        validationErr = 'water is a required field.'
+
+    if not body['date']:
+        validationErr = 'date is a required field.'
+    elif not utils.is_date(body['date']):
+        validationErr = 'date must be a date, dumbass'
+    else:
+        body['date'] = parser.parse(body['date']).strftime("%Y-%m-%d")
+
+    if not body['kibble_eaten']:
+        body['kibble_eaten'] = False
+
+    if not utils.is_number(body['water']):
+        validationErr = 'water must be a number'
+
+    if validationErr:
+        return jsonify('Validation error: {0}'.format(validationErr)), 400
+
+    try:
+        table = config['db'].Table('Ripley_Water')
+
+        table.put_item(
+            Item=body
+        )
+
+        return jsonify(body), 200
+    except Exception as e:
+        return jsonify('[ERROR]: {0}'.format(str(e))), 500
