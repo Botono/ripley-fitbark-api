@@ -87,3 +87,22 @@ def updateWater():
         return jsonify(body), 200
     except Exception as e:
         return jsonify('[ERROR]: {0}'.format(str(e))), 500
+
+
+@water.route('/water', methods=['PATCH'])
+def patchWater():
+    try:
+        ops = request.get_json()['ops']
+
+        for op in ops:
+            if op === 'add':
+                # put item
+            elif op === 'update':
+                # update in place unless value === 'date'
+                # then copy existing, create new, delete existing
+            elif op === 'remove':
+                # Foo
+
+        return jsonify('{}'), 405
+
+
