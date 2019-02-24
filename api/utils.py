@@ -6,6 +6,12 @@ def debug_log(msg):
     if config.get('debug_mode'):
         print('[DEBUG] {0}'.format(msg))
 
+
+def error_log(msg):
+    errMsg = '[ERROR] {0}'.format(msg)
+    print(errMsg)
+    return { 'error': msg }
+
 def get_db():
     if config['db'] is None:
         config['db'] = boto3.resource('dynamodb', region_name=config['region'])
@@ -31,3 +37,20 @@ def is_number(s):
     except ValueError:
         debug_log('"{0}" is not a number'.format(s))
         return False
+
+def format_date(date):
+    date = parser.parse(date).strftime("%Y-%m-%d")
+
+    return date
+
+# https://gist.github.com/pgolding/231f5ce02b7e1fd16a7edc656aa8433e
+def build_update_expression(data):
+    vals = {}
+    exp = 'SET '
+    attr_names = {}
+    for key, value in data.items():
+        vals[':{}'.format(key)] = value
+        attr_names['#pf_{}'.format(key)] = key
+        exp += '#pf_{} = :{},'.format(key, key)
+    exp = exp.rstrip(",")
+    return vals, exp, attr_names
