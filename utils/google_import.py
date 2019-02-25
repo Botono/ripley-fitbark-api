@@ -6,6 +6,7 @@ import json
 from datetime import datetime, timedelta, timezone
 import dateutil.parser as parser
 from decimal import Decimal
+import xxhash
 
 def safe_list_get(l, idx, default):
   try:
@@ -150,8 +151,10 @@ def get_changelog(sheet):
             date = parser.parse(row[0])
             print('Writing changelog with date {0}'.format(
                 date.strftime("%Y-%m-%d")))
+            message_hash = xxhash.xxh64(row[2]).hexdigest()
             table.put_item(
                 Item={
+                    'messageHash': message_hash,
                     'date': date.strftime("%Y-%m-%d"),
                     'type': row[1],
                     'message': row[2],

@@ -1,5 +1,6 @@
 import boto3
 import simplejson as json
+import xxhash
 
 db = None
 
@@ -43,6 +44,8 @@ def handleChangelog(payload):
     try:
         db = boto3.resource('dynamodb')
         table = db.Table('Ripley_Changelog')
+
+        payload['messageHash'] = xxhash.xxh64(payload['message']).hexdigest()
 
         table.put_item(
             Item=payload

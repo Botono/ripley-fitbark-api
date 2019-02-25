@@ -3,3 +3,4 @@ flask-cors==3.*
 aws-wsgi==0.0.*
 simplejson==3.*
 google-api-python-client==1.7.*
+xxhash==1.*

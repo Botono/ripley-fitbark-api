@@ -59,8 +59,8 @@ resource "aws_dynamodb_table" "ripley_changelog" {
   name           = "Ripley_Changelog"
   read_capacity  = 10
   write_capacity = 5
-  hash_key       = "date"
-  range_key      = "type"
+  hash_key       = "messageHash"
+  range_key      = "date"
 
   attribute {
     name = "date"
@@ -68,7 +68,7 @@ resource "aws_dynamodb_table" "ripley_changelog" {
   }
 
   attribute {
-    name = "type"
+    name = "messageHash"
     type = "S"
   }
 
