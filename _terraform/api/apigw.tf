@@ -135,6 +135,24 @@ resource "aws_api_gateway_usage_plan" "unlimited" {
   }
 }
 
+resource "aws_api_gateway_usage_plan" "standard" {
+  name = "standard"
+
+  api_stages {
+    api_id = "${aws_api_gateway_rest_api.api.id}"
+    stage  = "${aws_api_gateway_deployment.deployment.stage_name}"
+  }
+  throttle_settings {
+    burst_limit = 500
+    rate_limit  = 50
+  }
+
+  quota_settings {
+    limit  = 2000
+    period = "DAY"
+  }
+}
+
 resource "aws_api_gateway_api_key" "aaron" {
   name = "Aaron"
 
@@ -147,5 +165,20 @@ resource "aws_api_gateway_api_key" "aaron" {
 resource "aws_api_gateway_usage_plan_key" "main" {
   key_id        = "${aws_api_gateway_api_key.aaron.id}"
   key_type      = "API_KEY"
-  usage_plan_id = "${aws_api_gateway_usage_plan.unlimited.id}"
+  usage_plan_id = "${aws_api_gateway_usage_plan.standard.id}"
+}
+
+resource "aws_api_gateway_api_key" "shannon" {
+  name = "Shannon"
+
+  stage_key {
+    rest_api_id = "${aws_api_gateway_rest_api.api.id}"
+    stage_name  = "${aws_api_gateway_deployment.deployment.stage_name}"
+  }
+}
+
+resource "aws_api_gateway_usage_plan_key" "shannon" {
+  key_id        = "${aws_api_gateway_api_key.shannon.id}"
+  key_type      = "API_KEY"
+  usage_plan_id = "${aws_api_gateway_usage_plan.standard.id}"
 }
