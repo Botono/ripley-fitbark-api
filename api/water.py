@@ -85,6 +85,8 @@ def postWater():
         if not body['kibble_eaten']:
             body['kibble_eaten'] = False
 
+        if body.get('notes') == '':
+            del body['notes']
 
         get_response = table.get_item(Key={'date': body['date']})
 
