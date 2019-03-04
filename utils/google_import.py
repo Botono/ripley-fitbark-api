@@ -149,8 +149,9 @@ def get_changelog(sheet):
         table = db.Table('Ripley_Changelog')
         for row in values:
             date = parser.parse(row[0])
+            log_date = date.strftime("%Y-%m-%d")
             print('Writing changelog with date {0}'.format(
-                date.strftime("%Y-%m-%d")))
+                log_date))
             message_hash = xxhash.xxh64(row[2]).hexdigest()
             table.put_item(
                 Item={
