@@ -41,9 +41,9 @@ resource "aws_cloudwatch_log_group" "scraper" {
 }
 
 resource "aws_cloudwatch_event_rule" "every_eight_hours" {
-  name = "8-hours"
-  description = "Fires every 8 Hours"
-  schedule_expression = "rate(8 hours)"
+  name = "Scraper-timer"
+  description = "Fires once per day"
+  schedule_expression = "rate(24 hours)"
 }
 
 resource "aws_cloudwatch_event_target" "trigger_scraper_lambda" {

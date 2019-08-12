@@ -59,7 +59,8 @@ def getWater():
 
     for result in rawResults:
          processedResults[result['date']] = {
-             'water': config['water_start_amount'] - (result['water'] - config['water_bowl_weight']),
+             #'water': config['water_start_amount'] - (result['water'] - config['water_bowl_weight']),
+             'water': result.get('water_grams'),
              'kibble_eaten': result.get('kibble_eaten', False),
              'notes': result.get('notes', ''),
          }
@@ -88,15 +89,7 @@ def postWater():
         if body.get('notes') == '':
             del body['notes']
 
-        get_response = table.get_item(Key={'date': body['date']})
-
-        utils.debug_log(
-            'postWater(): get_item() response: {}'.format(get_response))
-
-        if get_response.get('Item', {}):
-            errMsg = utils.error_log(
-                'Item already exists with key {}, update it instead'.format(body['date']))
-            return jsonify(errMsg), 400
+        body['water_grams'] = config['water_start_amount'] - (body['water'] - config['water_bowl_weight']),
 
         table.put_item(
             Item=body

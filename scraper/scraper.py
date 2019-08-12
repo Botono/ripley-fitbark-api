@@ -24,7 +24,7 @@ def handler(event, context):
 
     #Set dates
     pst = dateutil.tz.gettz('America/Los_Angeles')
-    d = datetime.now(tz=pst)-timedelta(3)
+    d = datetime.now(tz=pst)-timedelta(7)
     startDate = d.strftime('%Y-%m-%d')
     d = datetime.now(tz=pst)-timedelta(1)
     endDate = d.strftime('%Y-%m-%d')
