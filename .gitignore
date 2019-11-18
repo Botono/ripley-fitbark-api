@@ -1,5 +1,6 @@
 .vscode
 .python-version
+.DS_Store
 
 *.tfvars
 .terraform

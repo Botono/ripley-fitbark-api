@@ -31,4 +31,6 @@ def lambda_handler(event, context):
     if config['db'] is None:
         config['db'] = boto3.resource(
             'dynamodb', region_name=config['region'])
+    if config['s3'] is None:
+        config['s3'] = boto3.resource('s3', region_name=config['region'])
     return awsgi.response(app, event, context)

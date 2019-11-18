@@ -155,11 +155,6 @@ resource "aws_api_gateway_usage_plan" "standard" {
 
 resource "aws_api_gateway_api_key" "aaron" {
   name = "Aaron"
-
-  stage_key {
-    rest_api_id = "${aws_api_gateway_rest_api.api.id}"
-    stage_name  = "${aws_api_gateway_deployment.deployment.stage_name}"
-  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "main" {
@@ -170,11 +165,6 @@ resource "aws_api_gateway_usage_plan_key" "main" {
 
 resource "aws_api_gateway_api_key" "shannon" {
   name = "Shannon"
-
-  stage_key {
-    rest_api_id = "${aws_api_gateway_rest_api.api.id}"
-    stage_name  = "${aws_api_gateway_deployment.deployment.stage_name}"
-  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "shannon" {

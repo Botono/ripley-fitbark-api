@@ -192,6 +192,37 @@ resource "aws_iam_policy" "lambda_sqs" {
 EOF
 }
 
+resource "aws_iam_policy" "lambda_api_s3_read_write" {
+  name = "lambda_read_write_api_s3_bucket"
+
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:ListBucket"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "${aws_s3_bucket.api_data.arn}"
+      ]
+    },
+    {
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "${aws_s3_bucket.api_data.arn}/*"
+      ]
+    }
+  ]
+}
+POLICY
+}
+
 
 
 resource "aws_iam_role_policy_attachment" "lambda_logging_attach" {
@@ -212,4 +243,9 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
 resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
   role = "${aws_iam_role.lambda_role.name}"
   policy_arn = "${aws_iam_policy.lambda_sqs.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_s3_attach" {
+  role = "${aws_iam_role.lambda_role.name}"
+  policy_arn = "${aws_iam_policy.lambda_api_s3_read_write.arn}"
 }

@@ -57,7 +57,7 @@ build-api:
 	mkdir -p _lambda_builds/api_build ; \
 	cp -a api/. _lambda_builds/api_build/ ; \
 	lpass show --notes $(GOOGLE_CREDS_NOTE_ID) > _lambda_builds/api_build/credentials.json ; \
-	docker run --rm -v $(shell pwd):/var/task -w /var/task/_lambda_builds/api_build lambci/lambda:build-python3.6 pip3 install -r requirements.txt --progress-bar emoji -t ./
+	docker run --rm -v $(shell pwd):/var/task -w /var/task/_lambda_builds/api_build lambci/lambda:build-python3.6 pip install --force-reinstall -r requirements.txt --progress-bar emoji -t ./
 
 deploy-api-function: build-api
 	cd _lambda_builds/api_build/ ; \
