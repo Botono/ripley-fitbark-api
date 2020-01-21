@@ -35,18 +35,16 @@ deploy-sheets-writer-function: build-sheets-writer
 	rm sheets_data_writer.zip
 
 build-scraper:
-	mkdir -p _lambda_builds/scraper_build ; \
-	cp -a scraper/. _lambda_builds/scraper_build/
-	docker run --rm -v $(shell pwd):/var/task -w /var/task/_lambda_builds/scraper_build lambci/lambda:build-python3.6 pip3 install -r requirements.txt -t ./
+	cd scraper ; \
+	dep ensure -v ; \
+	GOOS=linux go build -o main cmd/main.go ; \
+	zip -j scraper.zip main
 
-deploy-scraper-function: build-scraper
-	cd _lambda_builds/scraper_build/ ; \
-	zip -r ../scraper.zip . ; \
-	cd .. ; \
-	aws lambda update-function-code --profile ripley_api --region us-west-2 --function-name RipleyFitbark_Scraper --zip-file fileb://scraper.zip ; \
+deploy-scraper: build-scraper
+	aws lambda update-function-code --profile ripley_api --region us-west-2 --function-name RipleyFitbark_Scraper --zip-file fileb://scraper/scraper.zip ; \
 	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-2 --profile ripley_api outputfile.txt ; \
 	cat outputfile.txt | jq '.' ; \
-	rm scraper.zip outputfile.txt
+	rm scraper/scraper.zip scraper/main outputfile.txt
 
 invoke-scraper:
 	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-2 --profile ripley_api outputfile.txt ; \
