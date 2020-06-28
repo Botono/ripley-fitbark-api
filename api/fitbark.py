@@ -2,6 +2,7 @@ import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import dateutil.tz
 from datetime import datetime, timedelta, timezone
+import time
 from flask import (
     Flask,
     Blueprint,
@@ -42,15 +43,20 @@ def getActivity():
 
     try:
         table = config['db'].Table(tableName)
+        start_time = time.time()
 
         response = table.scan(
-            FilterExpression=Key('date').between(startDate, endDate)
+            FilterExpression=Key('date').gte(startDate)
         )
         rawResults.extend(response['Items'])
 
         while response.get('LastEvaluatedKey'):
-            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            response = table.scan(
+                FilterExpression=Key('date').gte(startDate),
+                ExclusiveStartKey=response['LastEvaluatedKey']
+            )
             rawResults.extend(response['Items'])
+        print('Activity DB Scan duration: {}'.format(time.time() - start_time))
 
     except Exception as e:
         return jsonify('DB scan failed: {0}'.format(str(e))), 500

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
 // ScrapeEvent represents the event data sent from AWS
@@ -16,6 +17,7 @@ type ScrapeEvent struct {
 type config struct {
 	event           ScrapeEvent
 	db              dynamodbiface.DynamoDBAPI
+	s3              s3iface.S3API
 	fitBarkURL      string
 	apiToken        string
 	slug            string

@@ -13,13 +13,18 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/json-iterator/go"
 )
 
 const (
-	hourly = "HOURLY"
-	daily  = "DAILY"
+	hourly                  = "HOURLY"
+	daily                   = "DAILY"
+	tableNameActivityHourly = "RipleyFitbark_Activity_Hourly"
+	tableNameActivityDaily  = "RipleyFitbark_Activity_Daily"
+	bucket                  = "ripley-health-api-data"
+	s3Key                   = "activity/%s/data.json"
 )
 
 var (
@@ -27,10 +32,6 @@ var (
 	resolutions = []string{
 		hourly,
 		daily,
-	}
-	tables = map[string]string{
-		hourly: "RipleyFitbark_Activity_Hourly",
-		daily:  "RipleyFitbark_Activity_Daily",
 	}
 )
 
@@ -61,6 +62,7 @@ func NewScraper(event ScrapeEvent) *Scraper {
 		config: &config{
 			event:      event,
 			db:         dynamodb.New(mySession),
+			s3:         s3.New(mySession),
 			fitBarkURL: "https://app.fitbark.com/api/v2/activity_series",
 			apiToken:   *apiToken.SecretString,
 			slug:       *slug.SecretString,
@@ -119,9 +121,10 @@ func (h *fitBarkResponseHourly) save(db dynamodbiface.DynamoDBAPI) {
 	defer elapsedTime("fitBarkResponseHourly.save()", time.Now())
 	for _, value := range h.ActivitySeries.Records {
 		av, _ := dynamodbattribute.MarshalMap(value)
+
 		putItem := &dynamodb.PutItemInput{
 			Item:      av,
-			TableName: aws.String(tables[hourly]),
+			TableName: aws.String(tableNameActivityHourly),
 		}
 		_, err := db.PutItem(putItem)
 		if err != nil {
@@ -136,7 +139,7 @@ func (d *fitBarkResponseDaily) save(db dynamodbiface.DynamoDBAPI) {
 		av, _ := dynamodbattribute.MarshalMap(value)
 		putItem := &dynamodb.PutItemInput{
 			Item:      av,
-			TableName: aws.String(tables[daily]),
+			TableName: aws.String(tableNameActivityDaily),
 		}
 		_, err := db.PutItem(putItem)
 		if err != nil {
@@ -155,8 +158,10 @@ func (s *Scraper) getFitBarkData(resolution string) ([]byte, error) {
 	}
 
 	// You gotta Add a negative to subtract a duration ugh
+	// startDate := now.Add(time.Hour * 24 * 7 * -1).In(location).Format("2006-01-02")
 	startDate := now.Add(time.Hour * 24 * 7 * -1).In(location).Format("2006-01-02")
-	endDate := now.Add(time.Hour * 24 * 1 * -1).In(location).Format("2006-01-02")
+	// endDate := now.Add(time.Hour * 24 * 1 * -1).In(location).Format("2006-01-02")
+	endDate := now.Format("2006-01-02")
 
 	requestBody := fitBarkRequest{
 		ActivitySeries: fitBarActivitySeries{
