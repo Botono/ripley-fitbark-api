@@ -4,18 +4,18 @@ data "aws_caller_identity" "current" {
 
 data "archive_file" "api" {
   type        = "zip"
-  source_dir = "${path.root}/../_lambda_builds/api_build"
-  output_path = "${path.root}/lambda_builds/${local.api_lambda_filename}"
+  source_file = "${path.root}/../api/main"
+  output_path = "${path.root}/${local.api_lambda_filename}"
 }
 
 resource "aws_lambda_function" "api" {
   description      = "API build with Flask"
-  filename         = "${path.root}/lambda_builds/${local.api_lambda_filename}"
+  filename         = "${path.root}/${local.api_lambda_filename}"
   source_code_hash = "${data.archive_file.api.output_base64sha256}"
   function_name    = "RipleyFitbark_API"
   role             = "${var.lambda_role_arn}"
-  runtime          = "python3.6"
-  handler          = "api.lambda_handler"
+  runtime          = "go1.x"
+  handler          = "main"
   kms_key_arn      = "${var.kms_key_arn}"
   memory_size      = 128
   timeout          = 30

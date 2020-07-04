@@ -1,5 +1,5 @@
 locals {
-  api_lambda_filename = "api.zip"
+  api_lambda_filename = "apilambda.zip"
 }
 
 variable "lambda_role_arn" {

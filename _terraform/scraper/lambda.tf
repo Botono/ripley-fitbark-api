@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {
 
 data "archive_file" "scraper" {
   type        = "zip"
-  source_file = "${path.root}/../scraper/scraper"
+  source_file = "${path.root}/../scraper/main"
   output_path = "${path.root}/${local.scraper_lambda_filename}"
 }
 
@@ -15,7 +15,7 @@ resource "aws_lambda_function" "scraper" {
   function_name    = "RipleyFitbark_Scraper"
   role             = "${var.lambda_role_arn}"
   runtime          = "go1.x"
-  handler          = "scraper"
+  handler          = "main"
   kms_key_arn      = "${var.kms_key_arn}"
   memory_size      = 128
   timeout          = 300

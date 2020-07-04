@@ -3,12 +3,12 @@ package main
 import (
 	"log"
 
-	"ripley-fitbark-api/scraper"
+	"github.com/Botono/ripley-fitbark-api/scraper"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func Handler(event scraper.ScrapeEvent) {
+func handler(event scraper.ScrapeEvent) {
 	log.Println("Starting Scraper")
 	s := scraper.NewScraper(event)
 	s.Scrape()
@@ -16,5 +16,5 @@ func Handler(event scraper.ScrapeEvent) {
 }
 
 func main() {
-	lambda.Start(Handler)
+	lambda.Start(handler)
 }

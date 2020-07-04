@@ -22,6 +22,10 @@ build-lambdas: pull-build-image build-scraper build-api build-sheets-writer
 
 deploy-functions: deploy-sheets-writer-function deploy-api-function deploy-scraper-function
 
+cleanup-binaries:
+	-rm scraper/main
+	-rm api/apilambda
+
 build-sheets-writer:
 	mkdir -p _lambda_builds/sheets_data_writer_build ; \
 	cp -a sheets_data_writer/. _lambda_builds/sheets_data_writer_build/
@@ -35,10 +39,10 @@ deploy-sheets-writer-function: build-sheets-writer
 	rm sheets_data_writer.zip
 
 build-scraper:
+	go mod tidy ; \
 	cd scraper ; \
-	dep ensure -v ; \
 	GOOS=linux go build -o main cmd/main.go ; \
-	zip -j scraper.zip main
+	zip -j scraperlambda.zip main
 
 deploy-scraper: build-scraper
 	aws lambda update-function-code --profile ripley_api --region us-west-2 --function-name RipleyFitbark_Scraper --zip-file fileb://scraper/scraper.zip ; \
@@ -52,19 +56,17 @@ invoke-scraper:
 	rm outputfile.txt
 
 build-api:
-	mkdir -p _lambda_builds/api_build ; \
-	cp -a api/. _lambda_builds/api_build/ ; \
-	lpass show --notes $(GOOGLE_CREDS_NOTE_ID) > _lambda_builds/api_build/credentials.json ; \
-	docker run --rm -v $(shell pwd):/var/task -w /var/task/_lambda_builds/api_build lambci/lambda:build-python3.6 pip install --force-reinstall -r requirements.txt --progress-bar emoji -t ./
+	go mod tidy ; \
+	cd api ; \
+	GOOS=linux go build -o main cmd/main.go ; \
+	zip -j apilambda.zip main
 
 deploy-api-function: build-api
-	cd _lambda_builds/api_build/ ; \
-	zip -r ../api.zip . ; \
-	cd .. ; \
-	aws lambda update-function-code --profile ripley_api --region us-west-2 --function-name RipleyFitbark_API --zip-file fileb://api.zip ; \
+	cd api ; \
+	aws lambda update-function-code --profile ripley_api --region us-west-2 --function-name RipleyFitbark_API --zip-file fileb://apilambda.zip ; \
 	aws lambda invoke --function-name RipleyFitbark_Scraper --region us-west-2 --profile ripley_api outputfile.txt ; \
 	cat outputfile.txt | jq '.' ; \
-	rm api.zip outputfile.txt
+	rm apilambda.zip main outputfile.txt
 	$(MAKE) -f $(THIS_FILE) cleanup-secrets
 
 pull-build-image:

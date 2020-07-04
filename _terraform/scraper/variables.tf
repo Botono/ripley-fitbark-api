@@ -1,5 +1,5 @@
 locals {
-  scraper_lambda_filename = "scraper.zip"
+  scraper_lambda_filename = "scraperlambda.zip"
 }
 
 variable "lambda_role_arn" {
