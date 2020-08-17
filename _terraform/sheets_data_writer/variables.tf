@@ -3,16 +3,17 @@ locals {
 }
 
 variable "lambda_role_arn" {
-  type="string"
-  description="the ARN of the Lambda IAM Role"
+  type        = string
+  description = "the ARN of the Lambda IAM Role"
 }
 
 variable "kms_key_arn" {
-  type="string"
-  description="the ARN of the Secrets KMS Key"
+  type        = string
+  description = "the ARN of the Secrets KMS Key"
 }
 
 variable "google_sheets_sqs_queue_arn" {
-  type = "string"
+  type        = string
   description = "The ARN of the SQS Queue for Google Forms inputs"
 }
+

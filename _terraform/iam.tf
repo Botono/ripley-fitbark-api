@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda_role" {
-  provider = "aws"
+  provider = aws
   name     = "ripley-fitbark-lambda"
 
   assume_role_policy = <<EOF
@@ -17,6 +17,7 @@ resource "aws_iam_role" "lambda_role" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role" "apigw_cloudwatch" {
@@ -37,11 +38,12 @@ resource "aws_iam_role" "apigw_cloudwatch" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy" "apigw_cloudwatch" {
   name = "default"
-  role = "${aws_iam_role.apigw_cloudwatch.id}"
+  role = aws_iam_role.apigw_cloudwatch.id
 
   policy = <<EOF
 {
@@ -63,11 +65,12 @@ resource "aws_iam_role_policy" "apigw_cloudwatch" {
     ]
 }
 EOF
+
 }
 
 resource "aws_iam_policy" "lambda_logging_policy" {
-  provider = "aws"
-  name = "lambda_logging"
+  provider = aws
+  name     = "lambda_logging"
 
   policy = <<EOF
 {
@@ -84,11 +87,12 @@ resource "aws_iam_policy" "lambda_logging_policy" {
    ]
 }
 EOF
+
 }
 
 resource "aws_iam_policy" "lambda_secrets_policy" {
-  provider = "aws"
-  name = "lambda_secrets"
+  provider = aws
+  name     = "lambda_secrets"
 
   policy = <<EOF
 {
@@ -111,11 +115,12 @@ resource "aws_iam_policy" "lambda_secrets_policy" {
     ]
 }
 EOF
+
 }
 
 resource "aws_iam_policy" "lambda_dynamodb_policy" {
-  provider = "aws"
-  name = "lambda_dynamodb"
+  provider = aws
+  name     = "lambda_dynamodb"
 
   policy = <<EOF
 {
@@ -144,15 +149,14 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
     ]
 }
 EOF
+
 }
 
 resource "aws_iam_policy" "sqs_send_message" {
-  provider = "aws"
-  name = "sqs_send_message_only"
+  provider = aws
+  name     = "sqs_send_message_only"
 
-  depends_on = [
-    "aws_sqs_queue.google_sheets"
-  ]
+  depends_on = [aws_sqs_queue.google_sheets]
 
   policy = <<EOF
 {
@@ -166,11 +170,12 @@ resource "aws_iam_policy" "sqs_send_message" {
     ]
 }
 EOF
+
 }
 
 resource "aws_iam_policy" "lambda_sqs" {
-  provider = "aws"
-  name = "lambda_do_sqs_stuff"
+  provider = aws
+  name     = "lambda_do_sqs_stuff"
 
   policy = <<EOF
 {
@@ -190,6 +195,7 @@ resource "aws_iam_policy" "lambda_sqs" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_policy" "lambda_api_s3_read_write" {
@@ -221,31 +227,31 @@ resource "aws_iam_policy" "lambda_api_s3_read_write" {
   ]
 }
 POLICY
+
 }
 
-
-
 resource "aws_iam_role_policy_attachment" "lambda_logging_attach" {
-  role = "${aws_iam_role.lambda_role.name}"
-  policy_arn = "${aws_iam_policy.lambda_logging_policy.arn}"
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_logging_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_secrets_attach" {
-  role = "${aws_iam_role.lambda_role.name}"
-  policy_arn = "${aws_iam_policy.lambda_secrets_policy.arn}"
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_secrets_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
-  role = "${aws_iam_role.lambda_role.name}"
-  policy_arn = "${aws_iam_policy.lambda_dynamodb_policy.arn}"
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
-  role = "${aws_iam_role.lambda_role.name}"
-  policy_arn = "${aws_iam_policy.lambda_sqs.arn}"
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_sqs.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_s3_attach" {
-  role = "${aws_iam_role.lambda_role.name}"
-  policy_arn = "${aws_iam_policy.lambda_api_s3_read_write.arn}"
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_api_s3_read_write.arn
 }
+

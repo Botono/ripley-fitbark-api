@@ -16,9 +16,8 @@ resource "aws_dynamodb_table" "fitbark_hourly" {
   }
 
   point_in_time_recovery {
-      enabled = true
+    enabled = true
   }
-
 }
 
 resource "aws_dynamodb_table" "fitbark_daily" {
@@ -33,9 +32,8 @@ resource "aws_dynamodb_table" "fitbark_daily" {
   }
 
   point_in_time_recovery {
-      enabled = true
+    enabled = true
   }
-
 }
 
 resource "aws_dynamodb_table" "ripley_water" {
@@ -50,9 +48,8 @@ resource "aws_dynamodb_table" "ripley_water" {
   }
 
   point_in_time_recovery {
-      enabled = true
+    enabled = true
   }
-
 }
 
 resource "aws_dynamodb_table" "ripley_changelog" {
@@ -73,9 +70,8 @@ resource "aws_dynamodb_table" "ripley_changelog" {
   }
 
   point_in_time_recovery {
-      enabled = true
+    enabled = true
   }
-
 }
 
 resource "aws_dynamodb_table" "ripley_bloodwork" {
@@ -90,7 +86,7 @@ resource "aws_dynamodb_table" "ripley_bloodwork" {
   }
 
   point_in_time_recovery {
-      enabled = true
+    enabled = true
   }
-
 }
+
